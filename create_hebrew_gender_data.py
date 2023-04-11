@@ -1,11 +1,10 @@
-from copy import copy
-
 from selenium import webdriver
 from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
-import pandas as pd
 from tqdm import tqdm
+
 import json
+import pandas as pd
 import random
 
 
@@ -26,7 +25,7 @@ def create_hebrew_gender_dict() -> dict[str, str]:
         "דרך",
         "גרב",
         "סכין",
-        "בוהן",
+        "בוהן",  # UNKNOWN
         "אף",
         "חולצה",
         "שטיח",
@@ -105,14 +104,14 @@ def create_hebrew_gender_dict() -> dict[str, str]:
         "לשון",
         "מטריה",
         "שלולית",
-        "כלי נגינה",
+        "כלי נגינה",  # UNKNOWN
         "קייטנה",
         "שן",
         "עור",
         "סדין",
         "מנורה"
     ]
-    words = words[:6]  # Uncomment for debugging. Ensure at least 6 words
+    # words = words[:6]  # Uncomment for debugging. Ensure at least 6 words
     word_gender_dict = dict.fromkeys(words)
 
     for word in tqdm(words):
@@ -152,14 +151,33 @@ def selenium_get_gender_mapping(word):
     return gender_mapping[hebrew_gender]
 
 
+def create_random_pairs(size=100):
+    # Debugging: Number of distinct pairs is size(size-1)/4.
+    # We want at least `size` pairs. Solving the equation for size, we get size >= 6.
+    if size < 6:
+        raise ValueError("Size must be at least 6, otherwise there won't be enough distinct pairs")
+
+    numbers = list(range(size))  # Generate list of numbers from 0 to 99
+    pairs = []
+
+    while len(pairs) < size:
+        # Select two random numbers from the list
+        pair = random.sample(numbers, 2)
+        # Add the pair to the list of pairs
+        if pair not in pairs and pair[::-1] not in pairs:
+            pairs.append(pair)
+
+    return pairs
+
+
 def print_word_gender_as_samples_jsonl(word_gender_csv: pd.DataFrame):
     prompt = "You will be given a noun in Hebrew. Your role is to classify the word's grammatical gender to " \
              "Feminine or Masculine. In case the word carry both genders, output Both."
 
     for row in word_gender_csv.iterrows():
         # row[0] is the index, row[1] is the word_gender_csv
-        noun = row[1][0]
-        gender = row[1][1]
+        noun = row[1]['word']
+        gender = row[1]['gender']
         json_line = {
             "input": [
                 {
@@ -178,25 +196,6 @@ def print_word_gender_as_samples_jsonl(word_gender_csv: pd.DataFrame):
         # ensure_ascii=False to print hebrew.
         # source: https://stackoverflow.com/questions/18337407/saving-utf-8-texts-with-json-dumps-as-utf-8-not-as-a-u-escape-sequence
         print(json.dumps(json_line, ensure_ascii=False))
-
-
-def create_random_pairs(size=100):
-    # Debugging: Number of distinct pairs is size(size-1)/4.
-    # We want at least `size` pairs. Solving the equation for size, we get size >= 6.
-    if size < 6:
-        raise ValueError("Size must be at least 6, otherwise there won't be enough distinct pairs")
-
-    numbers = list(range(size))  # Generate list of numbers from 0 to 99
-    pairs = []
-
-    while len(pairs) < size:
-        # Select two random numbers from the list
-        pair = random.sample(numbers, 2)
-        # Add the pair to the list of pairs
-        if pair not in pairs and pair[::-1] not in pairs:
-            pairs.append(pair)
-
-    return pairs
 
 
 def print_words_pairs_as_samples_jsonl(word_gender_csv: pd.DataFrame):
@@ -239,8 +238,8 @@ if __name__ == "__main__":
     # >>> step 1: create csv `word_gender_csv` of hebrew noun, and it's grammatical_gender
     word_gender_dict = create_hebrew_gender_dict()
     # save as csv with noun/gender cols
-    df = pd.DataFrame.from_dict(word_gender_dict, orient="index", columns=["word"])
-    df["gender"] = df.index
+    df = pd.DataFrame.from_dict(word_gender_dict, orient="index", columns=["gender"])
+    df["word"] = df.index
     df.to_csv("word_gender_data.csv", index=False)
 
     # Check the data manually and fix the UNKNOWN values
