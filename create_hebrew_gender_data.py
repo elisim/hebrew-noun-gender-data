@@ -9,7 +9,7 @@ import json
 import random
 
 
-def create_hebrew_gender_csv():
+def create_hebrew_gender_dict() -> dict[str, str]:
     words = [
         "יד",
         "רגל",
@@ -112,6 +112,7 @@ def create_hebrew_gender_csv():
         "סדין",
         "מנורה"
     ]
+    words = words[:6]  # Uncomment for debugging. Ensure at least 6 words
     word_gender_dict = dict.fromkeys(words)
 
     for word in tqdm(words):
@@ -151,10 +152,9 @@ def selenium_get_gender_mapping(word):
     return gender_mapping[hebrew_gender]
 
 
-def print_data_as_samples_jsonl(word_gender_csv: pd.DataFrame):
+def print_word_gender_as_samples_jsonl(word_gender_csv: pd.DataFrame):
     prompt = "You will be given a noun in Hebrew. Your role is to classify the word's grammatical gender to " \
-             "\"Feminine\" or \"Masculine\". In case the word carry both genders, output \"Both\". Output \
-             only \"Feminine\", \"Masculine\" or \"Both\", nothing else."
+             "Feminine or Masculine. In case the word carry both genders, output Both."
 
     for row in word_gender_csv.iterrows():
         # row[0] is the index, row[1] is the word_gender_csv
@@ -180,15 +180,20 @@ def print_data_as_samples_jsonl(word_gender_csv: pd.DataFrame):
         print(json.dumps(json_line, ensure_ascii=False))
 
 
-def create_random_pairs():
-    numbers = list(range(100))  # Generate list of numbers from 0 to 99
+def create_random_pairs(size=100):
+    # Debugging: Number of distinct pairs is size(size-1)/4.
+    # We want at least `size` pairs. Solving the equation for size, we get size >= 6.
+    if size < 6:
+        raise ValueError("Size must be at least 6, otherwise there won't be enough distinct pairs")
+
+    numbers = list(range(size))  # Generate list of numbers from 0 to 99
     pairs = []
 
-    while len(pairs) < 100:
+    while len(pairs) < size:
         # Select two random numbers from the list
-        pair = tuple(random.sample(numbers, 2))
+        pair = random.sample(numbers, 2)
         # Add the pair to the list of pairs
-        if pair not in pairs:
+        if pair not in pairs and pair[::-1] not in pairs:
             pairs.append(pair)
 
     return pairs
@@ -199,12 +204,12 @@ def print_words_pairs_as_samples_jsonl(word_gender_csv: pd.DataFrame):
              "Answer Y or N, nothing else."
 
     word_gender_dict = word_gender_csv.to_dict()
-    words_dict = word_gender_dict["noun"]
+    words_dict = word_gender_dict["word"]
     gender_dict = word_gender_dict["gender"]
 
-    random_pairs_100 = create_random_pairs()
+    random_pairs = create_random_pairs(size=len(words_dict.keys()))
 
-    for pair in random_pairs_100:
+    for pair in random_pairs:
         words = [words_dict[pair[0]], words_dict[pair[1]]]
         genders = [gender_dict[pair[0]], gender_dict[pair[1]]]
 
@@ -231,15 +236,20 @@ def print_words_pairs_as_samples_jsonl(word_gender_csv: pd.DataFrame):
 
 
 if __name__ == "__main__":
-    # >>> step 1: create csv word_gender_csv of hebrew noun, and it's grammatical_gender
-    # word_gender_dict = create_hebrew_gender_csv()
-    # pd.DataFrame.from_dict(word_gender_dict, orient="index").to_csv("word_gender_data.csv")
+    # >>> step 1: create csv `word_gender_csv` of hebrew noun, and it's grammatical_gender
+    word_gender_dict = create_hebrew_gender_dict()
+    # save as csv with noun/gender cols
+    df = pd.DataFrame.from_dict(word_gender_dict, orient="index", columns=["word"])
+    df["gender"] = df.index
+    df.to_csv("word_gender_data.csv", index=False)
+
+    # Check the data manually and fix the UNKNOWN values
 
     # >>> step 2: convert word_gender_csv to samples.jsonl. Make sure word_gender_data not contains UNKNOWN values
     # word_gender_csv = pd.read_csv("word_gender_data.csv")
-    # print_data_as_samples_jsonl(word_gender_csv)
+    # print_word_gender_as_samples_jsonl(word_gender_csv)
 
-    # >>> step 3: convert word_gender_csv to noun pairs with labels Y and N for same/not same gender
-    data = pd.read_csv("word_gender_data.csv")
-    print_words_pairs_as_samples_jsonl(data)
+    # # >>> step 3: convert word_gender_csv to noun pairs with labels Y and N for same/not same gender
+    # data = pd.read_csv("word_gender_data.csv")
+    # print_words_pairs_as_samples_jsonl(data)
 
