@@ -1,5 +1,6 @@
 # Hebrew Word Gender Data - OpenAI Evals
-This repository was used to create data of hebrew noun and grammatical gender for OpenAI Evals.
+This repository was used to create data of hebrew noun and grammatical gender for OpenAI Evals. Pull Request here:
+https://github.com/openai/evals/pull/634
 
 The csv data is in `word_gender_data.csv`. I used selenium to scrape the data from [wiktionary in Hebrew](https://he.wiktionary.org/wiki/%D7%95%D7%99%D7%A7%D7%99%D7%9E%D7%99%D7%9C%D7%95%D7%9F:%D7%A2%D7%9E%D7%95%D7%93_%D7%A8%D7%90%D7%A9%D7%99)
 
