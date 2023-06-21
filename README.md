@@ -2,7 +2,29 @@
 This repository was used to create data of hebrew noun and grammatical gender for OpenAI Evals. Pull Request here:
 https://github.com/openai/evals/pull/634
 
-The csv data is in `word_gender_data.csv`. I used selenium to scrape the data from [wiktionary in Hebrew](https://he.wiktionary.org/wiki/%D7%95%D7%99%D7%A7%D7%99%D7%9E%D7%99%D7%9C%D7%95%D7%9F:%D7%A2%D7%9E%D7%95%D7%93_%D7%A8%D7%90%D7%A9%D7%99)
+The csv data is in `word_gender_data.csv`. I used selenium to scrape the data from [wiktionary in Hebrew](https://he.wiktionary.org/wiki/%D7%95%D7%99%D7%A7%D7%99%D7%9E%D7%99%D7%9C%D7%95%D7%9F:%D7%A2%D7%9E%D7%95%D7%93_%D7%A8%D7%90%D7%A9%D7%99).
+
+Ten data points for example:
+
+```jsonl
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "כובע, כתף"}], "ideal": ["N"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "שיער, חולצה"}], "ideal": ["N"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "קייטנה, רגל"}], "ideal": ["Y"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "עניבה, כורסה"}], "ideal": ["Y"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "כפפה, רגל"}], "ideal": ["Y"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "שטיח, לשון"}], "ideal": ["N"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "דף, כפית"}], "ideal": ["N"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "אף, וידאו"}], "ideal": ["Y"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "כיסא, אף"}], "ideal": ["Y"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "כפתור, צוואר"}], "ideal": ["N"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "מראה, סוכרייה"}], "ideal": ["Y"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "שן, פח"}], "ideal": ["N"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "קייטנה, מכונת כביסה"}], "ideal": ["Y"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "קנקן, כף"}], "ideal": ["N"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "דרך, גרב"}], "ideal": ["Y"]}
+{"input": [{"role": "system", "content": "You will be prompted with two Hebrew nouns. Do these nouns have the same grammatical gender? Answer Y or N, nothing else."}, {"role": "user", "content": "מטוס, פעמון"}], "ideal": ["Y"]}
+  ```
+
 
 ## How to run
 Run the file `create_hebrew_gender_data.py`. It has three steps:
